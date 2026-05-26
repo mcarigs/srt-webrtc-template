@@ -46,7 +46,7 @@ header {
 }
 .video-container {
   position: relative; width: 100%; height: 100%;
-  background: #1a1a1a;
+  background: #1a1a1a url('offline.png') center/contain no-repeat;
 }
 iframe {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -68,7 +68,7 @@ iframe {
 }
 .single-iframe-wrapper {
   position: relative; flex-grow: 1; width: 100%;
-  background: #1a1a1a;
+  background: #1a1a1a url('offline.png') center/contain no-repeat;
 }
 
 /* guide page styling */
