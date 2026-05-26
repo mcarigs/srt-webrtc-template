@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Architecture</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .showcase-video { width: 100%; aspect-ratio: 16/9; background: #000; border: 1px solid #333; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; color: #555; }
+    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+    .tech-card { background: #1a1a1a; padding: 20px; border-radius: 6px; border: 1px solid #333; border-top: 3px solid #4da6ff; }
+    .tech-card h3 { margin-top: 0; color: #ffffff; font-size: 18px; }
+    .tech-card p { color: #aaaaaa; font-size: 14px; line-height: 1.5; margin-bottom: 0; }
+    
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85); z-index: 1000;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-content {
+      background: #111; padding: 30px; border-radius: 8px; border: 1px solid #333;
+      max-width: 450px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      border-top: 4px solid #0055ff;
+    }
+    .modal-content h3 { margin-top: 0; color: #ffffff; font-size: 22px; }
+    .modal-actions { margin-top: 25px; display: flex; justify-content: center; gap: 15px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="left-nav">
+      <img src="logo.png" alt="Stream Logo" class="logo" />
+      <span style="color: #aaaaaa; font-weight: bold; letter-spacing: 1px; margin-left: 10px;">INFRASTRUCTURE SHOWCASE</span>
+    </div>
+    
+    <div class="right-nav">
+      <button onclick="showLoginModal()" class="nav-button host-btn" style="cursor: pointer;">Live Portal Login</button>
+    </div>
+  </header>
+
+  <div class="guide-container">
+    <h1>Zero-Latency Restream Service</h1>
+    <div class="subtitle">Custom SRT Streaming, with WebRTC Multi-view</div>
+
+    <div class="showcase-video">
+      <p>[ Project Demonstration Video Placeholder ]</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>Project Overview</h2>
+      <p style="color: #cccccc; line-height: 1.6;">
+        This platform is a custom-built, peer-to-peer streaming environment designed to solve the delay issues, feed drops, and the overall finicky hassle of loading RTMP streams into OBS. By bypassing traditional RTMP protocols and utilizing a direct SRT to WebRTC pipeline, this platform delivers 1080p video feeds from 4 simultaneous broadcasters with sub-second latency. It serves as a real-time "green room" for live commentators to view gameplay instantly and restream to public platforms.
+      </p>
+    </div>
+
+    <div class="guide-section">
+      <h2>The Technology Stack</h2>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <h3>Docker Containerization</h3>
+          <p>The entire infrastructure is defined as code. MediaMTX and Nginx run in isolated, highly optimized containers, allowing the server to be wiped and rebuilt from a repository in seconds.</p>
+        </div>
+        <div class="tech-card">
+          <h3>MediaMTX & SRT Protocol</h3>
+          <p>Broadcasters connect to the server using SRT (Secure Reliable Transport) via OBS. This ensures maximum packet delivery and high-quality H264 video ingest with minimal overhead.</p>
+        </div>
+        <div class="tech-card">
+          <h3>FFmpeg Transcoding</h3>
+          <p>A custom backend script utilizes FFmpeg to intercept the SRT feeds, bypass the video to save CPU cycles, and seamlessly transcode standard AAC audio into the WebRTC-required Opus format on the fly.</p>
+        </div>
+        <div class="tech-card">
+          <h3>Nginx Security</h3>
+          <p> Nginx routes WebSocket traffic, handles API cross-origin requests, and protects the live feeds with HTTP Basic Authentication.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h2>Beautiful Frontend For Your Viewing Pleasure</h2>
+      <p style="color: #cccccc; line-height: 1.6;">
+        The client-side UI is built with lightweight, vanilla JavaScript to maximize browser performance. Instead of brute-forcing video connections, the frontend dynamically queries the MediaMTX internal API. 
+      </p>
+      <ul style="color: #cccccc; line-height: 1.6;">
+        <li><strong>API Integration:</strong> The UI polls the server's path list to determine which OBS instances are actively transmitting data.</li>
+        <li><strong>Graceful Degradation:</strong> If a streamer drops, the UI instantly detects the API change, destroys the iframe to save client CPU, and smoothly transitions to a fallback background.</li>
+        <li><strong>Grid Architecture:</strong> CSS Grid layouts accommodate both a 4-player split-screen, with options for isolated single-player viewing modes, toggled seamlessly without reloading the page.</li>
+      </ul>
+    </div>
+    
+    <footer style="text-align: center; padding: 60px 20px 20px; border-top: 1px solid #222; margin-top: 40px;">
+      <button onclick="showLoginModal()" class="nav-button host-btn" style="padding: 12px 24px; font-size: 16px; cursor: pointer;">Live Portal Login</button>
+    </footer>
+  </div>
+
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Authentication Required</h3>
+      <p style="color: #cccccc; line-height: 1.5;">The live dashboard is secured and requires authorization to view the active feeds. This ensures bandwidth is preserved for verified commentators.</p>
+      <p style="color: #4da6ff; font-weight: bold; margin: 20px 0; padding: 15px; background: rgba(0, 85, 255, 0.1); border-radius: 6px; border: 1px solid #0055ff;">
+        Please contact the server administrators for credentials.
+      </p>
+      <div class="modal-actions">
+        <button onclick="closeModal()" class="nav-button" style="cursor: pointer;">Cancel</button>
+        <a href="live.html" class="nav-button host-btn">Proceed to Login</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
+  </script>
+</body>
+</html>

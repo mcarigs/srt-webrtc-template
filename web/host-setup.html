@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Setup</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="config.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="index.html" class="logo-link">
+        <img src="logo.png" alt="Stream Logo" class="logo" />
+      </a>
+      <div class="nav-buttons">
+        <a href="live.html" class="nav-button">Back to Streams</a>
+      </div>
+    </header>
+
+    <div class="guide-container">
+      <h1>Host Setup Guide</h1>
+      <p class="subtitle">
+        How to capture player feeds into your main OBS broadcast. 
+        <br><br>
+        Remember that gameX (X being a number 1-4) is essentially the
+        streamkey, which will determine what feed each player is on.
+      </p>
+
+      <div class="guide-section">
+        <h2>Method 1: OBS Media Source (Recommended)</h2>
+        <p>This is the primary method for the highest quality and best performance.</p>
+        <ul>
+          <li>In OBS, add a new <strong>Media Source</strong>.</li>
+          <li>Uncheck <strong>"Local File"</strong>.</li>
+          <li>In the <strong>Input</strong> box, paste the SRT link for the player you want to capture:
+            <br><br>
+            <code data-tmpl="srt://{{HOST}}:8890?streamid=read:game1"></code><br>
+            <code data-tmpl="srt://{{HOST}}:8890?streamid=read:game2"></code><br>
+            <code data-tmpl="srt://{{HOST}}:8890?streamid=read:game3"></code><br>
+            <code data-tmpl="srt://{{HOST}}:8890?streamid=read:game4"></code>
+            <br><br>
+          </li>
+          <li><em>Pro-Tip:</em> To ensure zero-latency, drop the <strong>Network Buffering</strong> down to <code>1 MB</code></li>
+        </ul>
+      </div>
+
+      <div class="guide-section">
+        <h2>Method 2: VLC Video Source (Backup)</h2>
+        <p>If Media Source is lagging, skipping, or refusing to connect, OBS's built-in VLC player can serve as fallback.</p>
+        <ul>
+          <li>In OBS, add a new <strong>VLC Video Source</strong>.</li>
+          <li>Look for the <strong>Playlist</strong> box and click the small <strong>+</strong> icon on the right.</li>
+          <li>Select <strong>Add Path/URL</strong>.</li>
+          <li>Paste the exact same SRT link from Method 1 (e.g., <code data-tmpl="srt://{{HOST}}:8890?streamid=read:game1"></code>) and click OK.</li>
+          <li>Set <strong>Network Caching</strong> to <code>1500</code>, if you have issues making the feed appear, try changing to <code>2500</code>, then <code>5000</code>, then back to <code>1500</code></li>
+        </ul>
+      </div>
+
+      <div class="guide-section">
+        <h2>Method 3: Browser Source (Second Backup) </h2>
+        <p>If the raw video feeds are failing entirely and you have exhausted all other options you can pull the web player directly.</p>
+        <ul>
+          <li>In OBS, add a new <strong>Browser Source</strong>.</li>
+          <li><strong>URL:</strong> Use these links to capture the players feed:
+            <br><br>
+            <code data-tmpl="https://{{HOST}}:8889/game1-browser/"></code><br>
+            <code data-tmpl="https://{{HOST}}:8889/game2-browser/"></code><br>
+            <code data-tmpl="https://{{HOST}}:8889/game3-browser/"></code><br>
+            <code data-tmpl="https://{{HOST}}:8889/game4-browser/"></code>
+            <br><br>
+          </li>
+          <li><strong>Width:</strong> 1920 | <strong>Height:</strong> 1080</li>
+          <li>Check the box that says <strong>"Control audio via OBS"</strong> so you can mix their game volume in your audio mixer.</li>
+        </ul>
+      </div>
+    <div class="guide-section">
+        <h2>Method 4: Application Capture (Last Resort) </h2>
+        <p>If you have given up all hope, you can just pull up this site on your web browser.</p>
+        <ul>
+          <li>In OBS, add a new <strong>Window Capture, and Application Audio Capture</strong>.</li>
+          <li><strong>Select your browser for both,</strong> open <code data-tmpl="https://{{HOST}}/live.html"></code> and crop appropriately.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

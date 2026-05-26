@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRT Multi-View</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <header>
+    <div class="left-nav">
+      <img src="logo.png" alt="Stream Logo" class="logo" />
+      <button id="btn-grid" class="nav-button active-btn" onclick="showGrid()">View Grid</button>
+      <button id="btn-game1" class="nav-button" onclick="showSingle('game1')">Player 1</button>
+      <button id="btn-game2" class="nav-button" onclick="showSingle('game2')">Player 2</button>
+      <button id="btn-game3" class="nav-button" onclick="showSingle('game3')">Player 3</button>
+      <button id="btn-game4" class="nav-button" onclick="showSingle('game4')">Player 4</button>
+    </div>
+    
+    <div class="right-nav">
+      <a href="streamer-setup.html" class="nav-button streamer-btn">Streamer Guide</a>
+      <a href="host-setup.html" class="nav-button host-btn">Host Guide</a>
+    </div>
+  </header>
+
+  <div id="wrapper">
+    <div class="video-container"><div class="player-label">PLAYER 1</div><iframe id="frame1"></iframe></div>
+    <div class="video-container"><div class="player-label">PLAYER 2</div><iframe id="frame2"></iframe></div>
+    <div class="video-container"><div class="player-label">PLAYER 3</div><iframe id="frame3"></iframe></div>
+    <div class="video-container"><div class="player-label">PLAYER 4</div><iframe id="frame4"></iframe></div>
+  </div>
+
+  <div id="single-container" class="single-view">
+    <div id="single-title">PLAYER 1</div>
+    <div class="single-iframe-wrapper">
+      <iframe id="single-iframe"></iframe>
+    </div>
+  </div>
+
+<script>
+    const streams = { game1:'frame1', game2:'frame2', game3:'frame3', game4:'frame4' };
+    let activeSingle = null;
+    
+    function updateActiveButton(activeId) {
+      const btns = ['btn-grid', 'btn-game1', 'btn-game2', 'btn-game3', 'btn-game4'];
+      btns.forEach(id => document.getElementById(id).classList.remove('active-btn'));
+      document.getElementById(activeId).classList.add('active-btn');
+    }
+    
+    async function checkStreams() {
+      try {
+        let apiRes = await fetch(StreamConfig.apiUrl('/v3/paths/list'));
+        let data = await apiRes.json();
+        
+        let activePaths = data.items ? data.items.filter(i => i.ready).map(i => i.name) : [];
+        
+        console.log("API Check Successful. Live streams:", activePaths);
+
+        for (const [game, id] of Object.entries(streams)) {
+          let iframe = document.getElementById(id);
+          let targetUrl = StreamConfig.webrtcPlayerUrl(`${game}-browser`);
+          let expectedStream = `${game}-browser`;
+          
+          if (!iframe.hasAttribute('allow')) {
+              iframe.setAttribute('allow', 'autoplay');
+          }
+          
+          if (activePaths.includes(expectedStream)) {
+            if (iframe.getAttribute('src') !== targetUrl) {
+                console.log(`Starting ${game} player...`);
+                iframe.setAttribute('src', targetUrl);
+            }
+            iframe.style.opacity = "1";
+          } else { 
+            iframe.style.opacity = "0"; 
+            if (iframe.hasAttribute('src')) {
+                console.log(`Stopping ${game} player...`);
+                iframe.removeAttribute('src');
+            }
+          }
+        }
+
+        if (activeSingle) {
+          let sFrame = document.getElementById('single-iframe');
+          let targetUrl = StreamConfig.webrtcPlayerUrl(`${activeSingle}-browser`);
+          let expectedStream = `${activeSingle}-browser`;
+          
+          if (!sFrame.hasAttribute('allow')) sFrame.setAttribute('allow', 'autoplay');
+
+          if (activePaths.includes(expectedStream)) {
+            if (sFrame.getAttribute('src') !== targetUrl) sFrame.setAttribute('src', targetUrl);
+            sFrame.style.opacity = "1";
+          } else {
+            sFrame.style.opacity = "0";
+            if (sFrame.hasAttribute('src')) sFrame.removeAttribute('src');
+          }
+        }
+      } catch(e) {
+        console.error("The API request failed! The browser is likely blocking it:", e);
+        document.querySelectorAll('iframe').forEach(frame => {
+          frame.style.opacity = "0";
+          if (frame.hasAttribute('src')) frame.removeAttribute('src');
+        });
+      }
+    }
+    
+    function showSingle(g) {
+      if (activeSingle !== g) {
+        let sFrame = document.getElementById('single-iframe');
+        sFrame.style.opacity = "0";
+        if (sFrame.hasAttribute('src')) sFrame.removeAttribute('src');
+      }
+      activeSingle = g;
+      document.getElementById('wrapper').style.display = '';
+      document.getElementById('single-container').style.display = 'flex'; 
+      let playerNum = g.replace('game', '');
+      document.getElementById('single-title').innerText = "PLAYER " + playerNum;
+      updateActiveButton('btn-' + g);
+      checkStreams();
+    }
+    
+    function showGrid() {
+      activeSingle = null;
+      document.getElementById('wrapper').style.display = 'grid';
+      document.getElementById('single-container').style.display = 'none';
+      updateActiveButton('btn-grid');
+      let sFrame = document.getElementById('single-iframe');
+      sFrame.style.opacity = "0";
+      if (sFrame.hasAttribute('src')) sFrame.removeAttribute('src');
+    }
+    
+    setInterval(checkStreams, 3000);
+    checkStreams();
+  </script>
+</body>
+</html>
