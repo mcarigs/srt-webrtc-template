@@ -7,11 +7,13 @@ const StreamConfig = {
   },
 
   apiUrl(path) {
-    return `https://${this.host}:9997${path}`;
+    // Dynamically uses http:// or https:// depending on the deployment
+    return `${window.location.protocol}//${this.host}:9997${path}`;
   },
 
   webrtcPlayerUrl(streamName) {
-    return `https://${this.host}:8889/${streamName}/`;
+    // Dynamically uses http:// or https:// depending on the deployment
+    return `${window.location.protocol}//${this.host}:8889/${streamName}/`;
   },
 
   srtUrl(game, mode) {
