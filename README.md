@@ -16,12 +16,12 @@ Dockerized streaming server: low-latency **SRT** ingest from OBS, automatic AAC�
 
 ## Quick start
 
-\`\`\`bash
+```bash
 git clone [https://github.com/your-username/webrtc-project.git](https://github.com/your-username/webrtc-project.git)
 cd webrtc-project
 chmod +x deploy.sh
 ./deploy.sh
-\`\`\`
+```
 
 `deploy.sh` will:
 
@@ -36,17 +36,17 @@ chmod +x deploy.sh
 
 Copy `.env.example` to `.env` and set your domain before running deploy:
 
-\`\`\`bash
+```bash
 cp .env.example .env
 # edit DOMAIN=your.domain.com
 ./deploy.sh
-\`\`\`
+```
 
 To change domains later, update `DOMAIN` in `.env` and run `./deploy.sh` again.
 
 ## Repository structure
 
-\`\`\`text
+```text
 ├── .env.example              # DOMAIN=your.domain.com
 ├── default.conf.template     # Nginx template (__DOMAIN__ placeholder)
 ├── mediamtx.yml              # MediaMTX config (__DOMAIN__ in cert paths)
@@ -59,7 +59,7 @@ To change domains later, update `DOMAIN` in `.env` and run `./deploy.sh` again.
     ├── live.html             # Password-protected 4-up viewer
     ├── streamer-setup.html
     └── host-setup.html
-\`\`\`
+```
 
 ## Stream paths
 
@@ -73,8 +73,8 @@ Guide pages under `web/` fill in `YOUR_DOMAIN` automatically from the hostname i
 
 ## Redeploy / restart
 
-\`\`\`bash
+```bash
 ./deploy.sh          # full idempotent setup
 # or, if .env and generated/ already exist:
 docker-compose down && docker-compose up -d
-\`\`\`
+```
