@@ -80,7 +80,7 @@ docker-compose down && docker-compose up -d
 ```
 
 ## Author
-**[KingofTheBeez](https://gitlab.com/AlecBaldwin69):** Core development, UI layout, and infrastructure deployment
+* **[KingofTheBeez](https://gitlab.com/AlecBaldwin69):** Core development, UI layout, and infrastructure deployment
 
 ## Credits & Acknowledgments
 
