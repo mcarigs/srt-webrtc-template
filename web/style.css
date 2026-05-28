@@ -29,7 +29,7 @@ header {
   background-color: #000000;
   border-color: #222;
   color: #888;
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.8);
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.8); /* Makes it look pressed */
 }
 
 /* guide buttons */
@@ -38,6 +38,8 @@ header {
 
 .streamer-btn { background: linear-gradient(135deg, #009933, #004411); border-color: #009933; }
 .streamer-btn:hover { background: linear-gradient(135deg, #00bb44, #006622); }
+.admin-btn { background: linear-gradient(135deg, #cc0000, #660000); border-color: #cc0000; }
+.admin-btn:hover { background: linear-gradient(135deg, #ff1a1a, #990000); }
 
 /* video grid*/
 #wrapper {
@@ -71,6 +73,17 @@ iframe {
   background: #1a1a1a url('offline.png') center/contain no-repeat;
 }
 
+/* showcase video container */
+.showcase-video {
+  width: 95%;
+  max-width: 1650px;
+  margin: 40px auto; 
+  border-radius: 8px;
+  overflow: hidden; 
+  box-shadow: 0px 10px 25px rgba(0,0,0,0.5); 
+  font-size: 0;
+}
+
 /* guide page styling */
 .guide-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
 .guide-container h1 { text-align: center; font-size: 36px; margin-bottom: 10px; }
@@ -91,12 +104,12 @@ iframe {
 code { background-color: #000; padding: 4px 8px; border-radius: 4px; color: #ff9d00; font-family: monospace; word-break: break-all; }
 
 /* =========================================
-   Mobile support (Perfected 12-Column Grid)
+   Mobile support (LMAO WHY AM I DOING THIS)
    ========================================= */
 @media (max-width: 768px) {
   header {
     display: grid !important;
-    grid-template-columns: repeat(12, 1fr) !important;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 8px !important;
     padding: 15px 10px !important;
     height: auto !important;
@@ -123,16 +136,15 @@ code { background-color: #000; padding: 4px 8px; border-radius: 4px; color: #ff9
     justify-content: center !important;
   }
 
-  /* Row 2: 4 Buttons (3 columns each) */
-  #btn-game1 { grid-column: 1 / span 3; grid-row: 2; }
-  #btn-game2 { grid-column: 4 / span 3; grid-row: 2; }
-  #btn-game3 { grid-column: 7 / span 3; grid-row: 2; }
-  #btn-game4 { grid-column: 10 / span 3; grid-row: 2; }
+  #btn-game1 { grid-column: 1; grid-row: 2; }
+  #btn-game2 { grid-column: 2; grid-row: 2; }
+  #btn-game3 { grid-column: 3; grid-row: 2; }
+  #btn-game4 { grid-column: 4; grid-row: 2; }
   
-  /* Row 3: 2 Guide Buttons + 1 Grid Button (4 columns each) */
-  #btn-grid { grid-column: 1 / span 4; grid-row: 3; }
-  .streamer-btn { grid-column: 5 / span 4; grid-row: 3; }
-  .host-btn { grid-column: 9 / span 4; grid-row: 3; }
+  #btn-grid { grid-column: 1; grid-row: 3; }
+  .streamer-btn { grid-column: 2; grid-row: 3; }
+  .host-btn { grid-column: 3; grid-row: 3; }
+  .admin-btn { grid-column: 4; grid-row: 3; }
 
   #wrapper { 
     display: flex; 

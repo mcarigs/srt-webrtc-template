@@ -5,6 +5,5 @@
 
 # i dont think these would get upload but just in case
 
-*.mp4
 *.ts
 .htpasswd

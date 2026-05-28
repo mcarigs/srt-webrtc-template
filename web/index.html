@@ -39,13 +39,15 @@
     </div>
   </header>
 
-  <div class="guide-container">
+  <div style="width: 95%; max-width: 1320px; margin: 40px auto; border-radius: 8px; overflow: hidden; box-shadow: 0px 10px 25px rgba(0,0,0,0.5); font-size: 0; background: transparent;">
+      <video autoplay loop muted playsinline style="width: 100%; height: auto; display: block; margin: 0; padding: 0; pointer-events: none; border: none;">
+        <source src="showcase.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <div class="guide-container">
     <h1>Zero-Latency Restream Service</h1>
     <div class="subtitle">Custom SRT Streaming, with WebRTC Multi-view</div>
-
-    <div class="showcase-video">
-      <p>[ Project Demonstration Video Placeholder ]</p>
-    </div>
 
     <div class="guide-section">
       <h2>Project Overview</h2>
@@ -88,6 +90,31 @@
       </ul>
     </div>
     
+    <div class="guide-section">
+      <h2 style="color: #4da6ff;">Author</h2>
+      <ul style="color: #aaaaaa; line-height: 1.6; margin-bottom: 30px;">
+        <li><strong><a href="https://gitlab.com/AlecBaldwin69" target="_blank" style="color: #4da6ff; text-decoration: none;">KingofTheBeez</a>:</strong> Core development, UI layout, and infrastructure deployment.</li>
+      </ul>
+
+      <h2 style="color: #4da6ff;">Credits & Acknowledgments</h2>
+      <ul style="color: #aaaaaa; line-height: 1.6; margin-bottom: 30px;">
+        <li><strong><a href="https://gitlab.com/mcarigs" target="_blank" style="color: #4da6ff; text-decoration: none;">Carigs</a>:</strong> Codebase portability optimization for public release, suggestions and ideas. The goat.</li>
+        <li><strong><a href="https://discord.gg/hhNAaSP8eN" target="_blank" style="color: #4da6ff; text-decoration: none;">MGSG Community</a>:</strong> For testing and QA. This was built for them!</li>
+      </ul>
+
+      <h3 style="color: #cccccc; margin-top: 30px; font-size: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">Built With</h3>
+      <p style="color: #888; font-size: 15px; line-height: 1.5;">This low latency streaming environment stands on the shoulders of giants. A massive thank you to the developers and maintainers of the incredibly powerful open-source tools and protocols that make this possible:</p>
+      
+      <ul style="color: #aaaaaa; line-height: 1.8; font-size: 15px;">
+        <li><strong><a href="https://www.srtalliance.org/" target="_blank" style="color: #4da6ff; text-decoration: none;">Secure Reliable Transport (SRT)</a>:</strong> Originally developed by Haivision. Used for the video ingestion.</li>
+        <li><strong><a href="https://webrtc.org/" target="_blank" style="color: #4da6ff; text-decoration: none;">WebRTC</a>:</strong> Open-sourced by Google. Used for the peer-to-peer delivery.</li>
+        <li><strong><a href="https://ffmpeg.org/" target="_blank" style="color: #4da6ff; text-decoration: none;">FFmpeg</a>:</strong> Created by Fabrice Bellard. Used for converting the audio from AAC to Opus.</li>
+        <li><strong><a href="https://nginx.org/" target="_blank" style="color: #4da6ff; text-decoration: none;">Nginx</a>:</strong> Created by Igor Sysoev. Used for routing, reverse proxying, and clean URLs.</li>
+        <li><strong><a href="https://www.docker.com/" target="_blank" style="color: #4da6ff; text-decoration: none;">Docker</a>:</strong> Created by Solomon Hykes. Used for containerizing the entire environment.</li>
+        <li><strong><a href="https://letsencrypt.org/" target="_blank" style="color: #4da6ff; text-decoration: none;">Let's Encrypt & Certbot</a>:</strong> Provided by the ISRG and EFF. Used for automated SSL integration.</li>
+      </ul>
+    </div>
+
     <footer style="text-align: center; padding: 60px 20px 20px; border-top: 1px solid #222; margin-top: 40px;">
       <button onclick="showLoginModal()" class="nav-button host-btn" style="padding: 12px 24px; font-size: 16px; cursor: pointer;">Live Portal Login</button>
     </footer>

@@ -78,3 +78,21 @@ Guide pages under `web/` fill in `YOUR_DOMAIN` automatically from the hostname i
 # or, if .env and generated/ already exist:
 docker-compose down && docker-compose up -d
 ```
+
+## Author
+**[KingofTheBeez](https://gitlab.com/AlecBaldwin69):** Core development, UI layout, and infrastructure deployment
+
+## Credits & Acknowledgments
+
+* **[Carigs](https://gitlab.com/mcarigs):** Codebase portability optimization for public release, suggestions and ideas. The goat.
+* **[MGSG Community](https://discord.gg/hhNAaSP8eN):** For testing and QA. This was built for them!
+
+### Built With
+This low latency streaming environment stands on the shoulders of giants. A massive thank you to the developers and maintainers of the incredibly powerful open-source tools and protocols that make this possible:
+
+* **[Secure Reliable Transport (SRT)](https://www.srtalliance.org/):** Originally developed by Haivision. Used for the video ingestion.
+* **[WebRTC](https://webrtc.org/):** Open-sourced by Google. Used for the peer-to-peer delivery.
+* **[FFmpeg](https://ffmpeg.org/):** Created by Fabrice Bellard. Used for converting the audio from AAC to Opus.
+* **[Nginx](https://nginx.org/):** Created by Igor Sysoev. Used for routing, reverse proxying, and clean URLs.
+* **[Docker](https://www.docker.com/):** Created by Solomon Hykes. Used for containerizing the entire environment.
+* **[Let's Encrypt & Certbot](https://letsencrypt.org/):** Provided by the ISRG and EFF. Used for automated SSL integration.
