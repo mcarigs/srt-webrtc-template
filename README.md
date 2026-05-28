@@ -17,8 +17,8 @@ Dockerized streaming server: low-latency **SRT** ingest from OBS, automatic AACâ
 ## Quick start
 
 ```bash
-git clone https://github.com/your-username/srt-webrtc-project.git
-cd srt-webrtc-project
+git clone https://github.com/your-username/srt-webrtc-template.git
+cd srt-webrtc-template
 chmod +x deploy.sh
 ./deploy.sh
 ```
