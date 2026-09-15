@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/bin/docker start stream-web >/dev/null 2>&1 || true

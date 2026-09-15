@@ -11,7 +11,9 @@
 <body>
   <header>
     <div class="left-nav">
-      <img src="logo.png" alt="Stream Logo" class="logo" />
+      <a href="index.html" class="logo-link">
+        <img src="logo.png" alt="Stream Logo" class="logo" />
+      </a>
       <button id="btn-grid" class="nav-button active-btn" onclick="showGrid()">View Grid</button>
       <button id="btn-game1" class="nav-button" onclick="showSingle('game1')">Player 1</button>
       <button id="btn-game2" class="nav-button" onclick="showSingle('game2')">Player 2</button>
@@ -98,7 +100,7 @@
           }
         }
       } catch(e) {
-        console.error("The API request failed! The browser is likely blocking it:", e);
+        console.error("The API request failed:", e);
         document.querySelectorAll('iframe').forEach(frame => {
           frame.style.opacity = "0";
           if (frame.hasAttribute('src')) frame.removeAttribute('src');
@@ -113,7 +115,7 @@
         if (sFrame.hasAttribute('src')) sFrame.removeAttribute('src');
       }
       activeSingle = g;
-      document.getElementById('wrapper').style.display = '';
+      document.getElementById('wrapper').style.display = 'none';
       document.getElementById('single-container').style.display = 'flex'; 
       let playerNum = g.replace('game', '');
       document.getElementById('single-title').innerText = "PLAYER " + playerNum;
@@ -123,7 +125,7 @@
     
     function showGrid() {
       activeSingle = null;
-      document.getElementById('wrapper').style.display = 'grid';
+      document.getElementById('wrapper').style.display = '';
       document.getElementById('single-container').style.display = 'none';
       updateActiveButton('btn-grid');
       let sFrame = document.getElementById('single-iframe');

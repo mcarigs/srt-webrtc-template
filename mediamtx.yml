@@ -60,37 +60,42 @@ authMethod: internal
 # Internal authentication.
 # Enabled users.
 authInternalUsers:
-  # Default unprivileged user.
-  # Username. 'any' means any user, including anonymous ones.
-- user: any
-  # Password. Not used in case of 'any' user.
-  pass:
-  # IPs or networks allowed to use this user. An empty list means any IP.
-  ips: []
-  # Permissions.
-  permissions:
-    # Available actions are: publish, read, playback, api, metrics, pprof.
-  - action: publish
-    # Paths can be set to further restrict access to a specific path.
-    # An empty path means any path.
-    # Regular expressions can be used by using a tilde as prefix.
-    path:
-  - action: read
-    path:
-  - action: playback
-    path:
-  - action: api
+  # Racers / stream publishers.
+  # The deployment script replaces __PUBLISH_KEY__ with a random secret.
+  - user: publisher
+    pass: __PUBLISH_KEY__
+    ips: []
+    permissions:
+      - action: publish
+        path: ~^game(1|2|3|4)$
 
-  # Default administrator.
-  # This allows to use API, metrics and PPROF without authentication,
-  # if the IP is localhost.
-- user: any
-  pass:
-  ips: ['127.0.0.1', '::1']
-  permissions:
-  - action: api
-  - action: metrics
-  - action: pprof
+  # Race hosts reading the original SRT feeds into OBS.
+  # The deployment script replaces __HOST_KEY__ with a random secret.
+  - user: host
+    pass: __HOST_KEY__
+    ips: []
+    permissions:
+      - action: read
+        path: ~^game(1|2|3|4)$
+
+# Allow MediaMTX's local FFmpeg process to read the original stream
+# and publish the browser-compatible version back into MediaMTX.
+  - user: any
+    pass:
+    ips: ['127.0.0.1', '::1']
+    permissions:
+    - action: read
+      path: ~^game(1|2|3|4)$
+
+    - action: read
+      path: ~^game(1|2|3|4)-browser$
+
+    - action: publish
+      path: ~^game(1|2|3|4)-browser$
+
+    - action: api
+    - action: metrics
+    - action: pprof
 
 # HTTP-based authentication.
 # URL called to perform authentication. Every time a user wants
@@ -161,9 +166,8 @@ authJWTAudience:
 # Allow clients to control the server through the Control API.
 api: true
 # Address of the Control API listener.
-apiAddress: :9997
-# Enable HTTPS on the Control API server.
-apiEncryption: true
+apiAddress: 127.0.0.1:9997
+apiEncryption: false
 # Path to the server key. This is needed only when encryption is yes.
 # This can be generated with:
 # openssl genrsa -out server.key 2048
@@ -383,11 +387,8 @@ hlsCDNSecret: ''
 # Allow clients to publish and read streams with the WebRTC protocol.
 webrtc: true
 # Address of the WebRTC HTTP listener.
-webrtcAddress: :8889
-# Enable HTTPS on the WebRTC server.
-# This covers only the WebRTC handshake and does not influence the encryption of WebRTC streams
-# which are always encrypted, with a key that is exchanged during the WebRTC handshake.
-webrtcEncryption: true
+webrtcAddress: 127.0.0.1:8889
+webrtcEncryption: false
 # Path to the server key.
 # This can be generated with:
 # openssl genrsa -out server.key 2048

@@ -2,40 +2,63 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Streamer Setup</title>
+
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="style.css" />
+
+    <script src="portal-config.js"></script>
     <script src="config.js"></script>
   </head>
+
   <body>
     <header>
-      <a href="index.html" class="logo-link">
-        <img src="logo.png" alt="Stream Logo" class="logo" />
-      </a>
-      <div class="nav-buttons">
-        <a href="live.html" class="nav-button">Back to Streams</a>
+      <div class="left-nav">
+        <a href="index.html" class="logo-link">
+          <img src="logo.png" alt="Stream Logo" class="logo" />
+        </a>
+      </div>
+
+      <div class="right-nav">
+        <a href="live.html" class="nav-button streams-btn">Back to Streams</a>
+        <a href="streamer-setup.html" class="nav-button streamer-btn active-btn">Streamer Guide</a>
+        <a href="host-setup.html" class="nav-button host-btn">Host Guide</a>
       </div>
     </header>
 
     <div class="guide-container">
       <h1>Streamer Setup Guide</h1>
-      <p class="subtitle">How to connect to the server and fix the "Black Screen" error.</p>
+
+      <p class="subtitle">
+        How to connect to the server and fix the "Black Screen" error.
+      </p>
 
       <div class="guide-section">
         <h2>Step 1: Black Box Fix</h2>
-        <p>To prevent your stream from showing up as a black box on the website, you must turn off B-Frames. Open OBS, click <strong>Settings</strong>, and go to the <strong>Output</strong> tab. Change Output Mode to <strong>Advanced</strong>.</p>
-        
+
+        <p>
+          To prevent your stream from showing up as a black box on the website,
+          you must turn off B-Frames. Open OBS, click
+          <strong>Settings</strong>, and go to the
+          <strong>Output</strong> tab. Change Output Mode to
+          <strong>Advanced</strong>.
+        </p>
+
         <div class="split-instructions">
           <div class="instruction-box">
             <h3>If using CPU (x264)</h3>
+
             <ul>
               <li>Find the <strong>Tune</strong> dropdown.</li>
               <li>Change it to <strong>zerolatency</strong>.</li>
             </ul>
           </div>
+
           <div class="instruction-box">
             <h3>If using GPU (NVIDIA/AMD)</h3>
+
             <ul>
               <li>Find <strong>Max B-frames</strong>.</li>
               <li>Change the number to <strong>0</strong>.</li>
@@ -47,14 +70,40 @@
 
       <div class="guide-section">
         <h2>Step 2: Connect to the Server</h2>
-        <p>Go to the <strong>Stream</strong> tab in your OBS settings.</p>
+
+        <p>
+          Go to the <strong>Stream</strong> tab in your OBS settings.
+        </p>
+
         <ul>
-          <li><strong>Service:</strong> Custom</li>
-          <li><strong>Server:</strong> <code data-tmpl="srt://{{HOST}}:8890?streamid=publish:gameX"></code></li>
-          <li><strong>Replace X with a number 1-4</strong> (X being your assigned slot: 1, 2, 3, or 4)</li>
-          <li><strong>Stream Key:</strong> <strong>LEAVE BLANK!</strong> gameX essentially serves as your stream key, so leave this blank!</li>
+          <li>
+            <strong>Service:</strong>
+            Custom
+          </li>
+
+          <li>
+            <strong>Server:</strong>
+            <code
+              data-tmpl="srt://{{HOST}}:8890?streamid=publish:gameX:{{PUBLISH_USER}}:{{PUBLISH_KEY}}&amp;pkt_size=1316"
+            ></code>
+          </li>
+
+          <li>
+            <strong>Replace X with a number 1-4</strong>
+            (X being your assigned slot: 1, 2, 3, or 4)
+          </li>
+
+          <li>
+            <strong>Stream Key:</strong>
+            <strong>LEAVE BLANK!</strong>
+            The credentials are already included in the Server URL above.
+          </li>
         </ul>
-        <p class="apply-text">Click Apply, hit Start Streaming, and check the main page for your video feed!</p>
+
+        <p class="apply-text">
+          Click Apply, hit Start Streaming, and check the main page for your
+          video feed!
+        </p>
       </div>
     </div>
   </body>
