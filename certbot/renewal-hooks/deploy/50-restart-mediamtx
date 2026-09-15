@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/bin/docker restart stream-mediamtx >/dev/null 2>&1 || true

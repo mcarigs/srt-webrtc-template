@@ -6,15 +6,13 @@ services:
     image: nginx:alpine
     container_name: stream-web
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443" # Opened HTTPS port
+    network_mode: host
     volumes:
       - ./web:/usr/share/nginx/html:ro
+      - ./generated/portal-config.js:/etc/nginx/portal-config.js:ro
       - ./generated/default.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./.htpasswd:/etc/nginx/.htpasswd:ro
-      
   # ffmpeg and mediamtx
   mediamtx:
     image: bluenviron/mediamtx:latest-ffmpeg

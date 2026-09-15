@@ -1,23 +1,56 @@
-# Zero-Latency WebRTC Streaming Project
+# Zero-Latency SRT / WebRTC Streaming Project
 
-Dockerized streaming server: low-latency **SRT** ingest from OBS, automatic AAC→Opus transcoding, and a password-protected **WebRTC** multi-view grid in the browser.
+Dockerized restreaming server: low-latency **SRT** ingest from OBS, automatic AAC→Opus transcoding, direct SRT playback for hosts, and a password-protected **WebRTC** multi-view grid in the browser.
+
+Designed to be portable for races, tournaments, events, commentary, remote production, or any other situation where multiple incoming streams need to be monitored or restreamed.
 
 ## Architecture
 
-- **Nginx** — HTTPS front-end, static UI, HTTP Basic Auth on `/live.html`
-- **MediaMTX** — SRT ingest (`:8890`), WebRTC playback (`:8889`), Control API (`:9997`)
-- **FFmpeg** — On-demand per-path transcode to `gameX-browser` streams for WebRTC
+- **Nginx** — HTTPS front-end, static UI, HTTP Basic Auth for the private portal, and reverse proxying for WebRTC and the MediaMTX API
+- **MediaMTX** — SRT ingest/playback (`UDP :8890`), WebRTC media (`UDP :8189`), internal WebRTC HTTP service (`127.0.0.1:8889`), and internal Control API (`127.0.0.1:9997`)
+- **FFmpeg** — On-demand per-path transcode to `gameX-browser`, copying the original H.264 video while converting AAC audio to Opus for WebRTC
+
+### Stream flow
+
+```text
+OBS / SRT Source
+      │
+      ▼
+   MediaMTX
+      │
+      ├──────────────► Host / Restream OBS
+      │                  Original SRT feed
+      │
+      ▼
+    FFmpeg
+ H.264 copy
+ AAC → Opus
+      │
+      ▼
+   MediaMTX
+      │
+      ▼
+ WebRTC Browser Viewer
+```
 
 ## Prerequisites
 
-- Ubuntu server (or similar Linux host)
-- **A domain name** pointed at the server (Let's Encrypt cannot issue certs for bare IPs). If using a raw IP, the script will automatically fallback to HTTP.
-- Ports **80**, **443**, **8889**, **8890**, and **9997** reachable from clients
+- Ubuntu server or similar Linux host
+- Root access or an account with `sudo`
+- **A domain name** pointed at the server is recommended for HTTPS
+  - If a raw IP address is used, the deployment script automatically falls back to HTTP-only mode
+- Required public ports:
+  - **TCP 80** — HTTP / Let's Encrypt validation
+  - **TCP 443** — HTTPS website and proxied WebRTC/API traffic
+  - **UDP 8890** — SRT ingest/playback
+  - **UDP 8189** — WebRTC media transport
+
+Ports `8889` and `9997` are bound to localhost and should not be exposed publicly.
 
 ## Quick start
 
 ```bash
-git clone https://github.com/your-username/srt-webrtc-template.git
+git clone https://gitlab.com/AlecBaldwin69/srt-webrtc-template.git
 cd srt-webrtc-template
 chmod +x deploy.sh
 ./deploy.sh
@@ -26,60 +59,104 @@ chmod +x deploy.sh
 `deploy.sh` will:
 
 1. Install Docker / Docker Compose if needed
-2. Ask for your **domain** or **IP** (saved to `.env` as `DOMAIN=...`)
-3. Generate `generated/default.conf` and `generated/mediamtx.yml` from templates
-4. Obtain Let's Encrypt certificates via Certbot (standalone on port 80) or fallback to HTTP
-5. Create `.htpasswd` for the VIP live room
-6. Start containers with `docker-compose`
+2. Ask for your **domain** or **IP**
+3. Generate persistent SRT publish/read credentials
+4. Generate the Nginx and MediaMTX configuration files
+5. Obtain Let's Encrypt certificates when using a domain
+6. Configure automatic certificate renewal
+7. Create `.htpasswd` for the private portal
+8. Start the Docker containers
 
-### Manual configuration
+The generated domain and SRT credentials are stored in `.env` and reused during normal restarts and redeployments.
 
-Copy `.env.example` to `.env` and set your domain before running deploy:
+## Stream paths
+
+The protected setup pages automatically generate the correct URLs for the current server.
+
+| Role | URL |
+|------|-----|
+| Stream publish | `srt://YOUR_DOMAIN:8890?streamid=publish:game1:publisher:PUBLISH_KEY&pkt_size=1316` |
+| Host / restream read | `srt://YOUR_DOMAIN:8890?streamid=read:game1:host:HOST_KEY&pkt_size=1316` |
+| Browser WebRTC | `https://YOUR_DOMAIN/webrtc/game1-browser/` |
+
+The same format is used for:
+
+```text
+game1
+game2
+game3
+game4
+```
+
+When using a raw IP deployment, browser URLs use `http://` instead of `https://`.
+
+The SRT publish and read keys are generated automatically during the first deployment and remain persistent until manually rotated.
+
+## Rotate SRT keys
+
+If an SRT URL or credential is ever leaked, both access keys can be rotated with a single command:
 
 ```bash
-cp .env.example .env
-# edit DOMAIN=your.domain.com
+bash rotate-keys.sh
+```
+
+This will:
+
+- Generate a new publisher key
+- Generate a new host/read key
+- Update `.env`
+- Regenerate the MediaMTX and portal configuration
+- Restart **only MediaMTX**
+
+Nginx and the website remain online during the rotation.
+
+All previous SRT publish/read URLs immediately become invalid and users must retrieve the new URLs from the protected setup pages.
+
+## Restart / redeploy
+
+Restart the running containers:
+
+```bash
+docker-compose restart
+```
+
+Perform a full redeploy:
+
+```bash
 ./deploy.sh
 ```
 
-To change domains later, update `DOMAIN` in `.env` and run `./deploy.sh` again.
+A normal redeploy keeps the existing domain, SRT keys, portal password, and certificates.
 
 ## Repository structure
 
 ```text
-├── .env.example              # DOMAIN=your.domain.com
-├── default.conf.template     # Nginx template (__DOMAIN__ placeholder)
-├── mediamtx.yml              # MediaMTX config (__DOMAIN__ in cert paths)
-├── deploy.sh                 # One-shot setup script
-├── docker-compose.yml        # Mounts ./generated/*.yml configs
-├── generated/                # Created by deploy (gitignored except .gitkeep)
+├── .env.example
+├── default.conf.template
+├── mediamtx.yml
+├── deploy.sh
+├── rotate-keys.sh
+├── docker-compose.yml
+├── certbot/
+│   └── renewal-hooks/
+├── generated/
 └── web/
-    ├── config.js             # Host-relative API/WebRTC/SRT URLs
-    ├── index.html            # Public landing page
-    ├── live.html             # Password-protected 4-up viewer
+    ├── config.js
+    ├── index.html
+    ├── live.html
     ├── streamer-setup.html
     └── host-setup.html
 ```
 
-## Stream paths
-
-| Role | OBS server URL |
-|------|----------------|
-| Player 1–4 publish | `srt://YOUR_DOMAIN:8890?streamid=publish:game1` … `game4` |
-| Host read (OBS) | `srt://YOUR_DOMAIN:8890?streamid=read:game1` … `game4` |
-| Browser WebRTC | `https://YOUR_DOMAIN:8889/game1-browser/` … |
-
-Guide pages under `web/` fill in `YOUR_DOMAIN` automatically from the hostname in the browser.
-
-## Redeploy / restart
-
-```bash
-./deploy.sh          # full idempotent setup
-# or, if .env and generated/ already exist:
-docker-compose down && docker-compose up -d
-```
+- `deploy.sh` — Initial setup and full redeployment
+- `rotate-keys.sh` — Emergency SRT credential rotation
+- `default.conf.template` — Nginx HTTPS configuration template
+- `mediamtx.yml` — MediaMTX configuration template
+- `generated/` — Deployment-specific generated configuration
+- `web/` — Public site, private viewer, and setup guides
 
 ## Author
+
 * **[KingofTheBeez](https://gitlab.com/AlecBaldwin69):** Core development, UI layout, and infrastructure deployment
 
 ## Credits & Acknowledgments
@@ -88,11 +165,12 @@ docker-compose down && docker-compose up -d
 * **[MGSG Community](https://discord.gg/hhNAaSP8eN):** For testing and QA. This was built for them!
 
 ### Built With
+
 This low latency streaming environment stands on the shoulders of giants. A massive thank you to the developers and maintainers of the incredibly powerful open-source tools and protocols that make this possible:
 
-* **[Secure Reliable Transport (SRT)](https://www.srtalliance.org/):** Originally developed by Haivision. Used for the video ingestion.
-* **[WebRTC](https://webrtc.org/):** Open-sourced by Google. Used for the peer-to-peer delivery.
-* **[FFmpeg](https://ffmpeg.org/):** Created by Fabrice Bellard. Used for converting the audio from AAC to Opus.
-* **[Nginx](https://nginx.org/):** Created by Igor Sysoev. Used for routing, reverse proxying, and clean URLs.
-* **[Docker](https://www.docker.com/):** Created by Solomon Hykes. Used for containerizing the entire environment.
-* **[Let's Encrypt & Certbot](https://letsencrypt.org/):** Provided by the ISRG and EFF. Used for automated SSL integration.
+* **[Secure Reliable Transport (SRT)](https://www.srtalliance.org/):** Originally developed by Haivision. Used for low-latency video ingest and playback.
+* **[WebRTC](https://webrtc.org/):** Used for low-latency browser playback.
+* **[FFmpeg](https://ffmpeg.org/):** Created by Fabrice Bellard. Used for converting audio from AAC to Opus while preserving the original H.264 video.
+* **[Nginx](https://nginx.org/):** Created by Igor Sysoev. Used for the web front-end, authentication, reverse proxying, and HTTPS.
+* **[Docker](https://www.docker.com/):** Created by Solomon Hykes. Used for containerizing the streaming environment.
+* **[Let's Encrypt & Certbot](https://letsencrypt.org/):** Used for automated HTTPS certificate issuance and renewal.

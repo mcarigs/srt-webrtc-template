@@ -2,7 +2,8 @@
 
 *.log
 *.txt
-
+# Local deployment configuration and secrets
+.env
 # i dont think these would get upload but just in case
 
 *.ts

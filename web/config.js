@@ -6,28 +6,56 @@ const StreamConfig = {
     return window.location.hostname;
   },
 
+  get origin() {
+    return window.location.origin;
+  },
+
   apiUrl(path) {
-    // Dynamically uses http:// or https:// depending on the deployment
-    return `${window.location.protocol}//${this.host}:9997${path}`;
+    return `${this.origin}/api${path}`;
   },
 
   webrtcPlayerUrl(streamName) {
-    // Dynamically uses http:// or https:// depending on the deployment
-    return `${window.location.protocol}//${this.host}:8889/${streamName}/`;
+    return `${this.origin}/webrtc/${streamName}/`;
   },
 
   srtUrl(game, mode) {
-    return `srt://${this.host}:8890?streamid=${mode}:${game}`;
+    const portal = window.PortalConfig || {};
+
+    if (mode === 'publish') {
+      return (
+        `srt://${this.host}:8890` +
+        `?streamid=publish:${game}:${portal.publishUser}:${portal.publishKey}` +
+        `&pkt_size=1316`
+      );
+    }
+
+    if (mode === 'read') {
+      return (
+        `srt://${this.host}:8890` +
+        `?streamid=read:${game}:${portal.hostUser}:${portal.hostKey}` +
+        `&pkt_size=1316`
+      );
+    }
+
+    throw new Error(`Unsupported SRT mode: ${mode}`);
   },
 
   siteUrl() {
-    return `${window.location.protocol}//${this.host}`;
+    return this.origin;
   },
 };
 
 function applyHostTemplates() {
+  const portal = window.PortalConfig || {};
+
   document.querySelectorAll('[data-tmpl]').forEach((el) => {
-    el.textContent = el.dataset.tmpl.replace(/\{\{HOST\}\}/g, StreamConfig.host);
+    el.textContent = el.dataset.tmpl
+      .replace(/\{\{HOST\}\}/g, StreamConfig.host)
+      .replace(/\{\{ORIGIN\}\}/g, StreamConfig.origin)
+      .replace(/\{\{PUBLISH_USER\}\}/g, portal.publishUser || '')
+      .replace(/\{\{PUBLISH_KEY\}\}/g, portal.publishKey || '')
+      .replace(/\{\{HOST_USER\}\}/g, portal.hostUser || '')
+      .replace(/\{\{HOST_KEY\}\}/g, portal.hostKey || '');
   });
 }
 
